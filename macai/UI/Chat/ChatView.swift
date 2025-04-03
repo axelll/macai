@@ -70,18 +70,20 @@ struct ChatView: View {
                         .id("system_message")
 
                         if chat.messages.count > 0 {
-                            ForEach(chatViewModel.sortedMessages, id: \.self) { messageEntity in
-                                let bubbleContent = ChatBubbleContent(
-                                    message: messageEntity.body,
-                                    own: messageEntity.own,
-                                    waitingForResponse: messageEntity.waitingForResponse,
-                                    errorMessage: nil,
-                                    systemMessage: false,
-                                    isStreaming: isStreaming,
-                                    isLatestMessage: messageEntity.id == chatViewModel.sortedMessages.last?.id
-                                )
-                                ChatBubbleView(content: bubbleContent, message: messageEntity)
-                                    .id(messageEntity.id)
+                            LazyVStack {
+                                ForEach(chatViewModel.sortedMessages, id: \.self) { messageEntity in
+                                    let bubbleContent = ChatBubbleContent(
+                                        message: messageEntity.body,
+                                        own: messageEntity.own,
+                                        waitingForResponse: messageEntity.waitingForResponse,
+                                        errorMessage: nil,
+                                        systemMessage: false,
+                                        isStreaming: isStreaming,
+                                        isLatestMessage: messageEntity.id == chatViewModel.sortedMessages.last?.id
+                                    )
+                                    ChatBubbleView(content: bubbleContent, message: messageEntity)
+                                        .id(messageEntity.id)
+                                }
                             }
                         }
 
@@ -132,6 +134,13 @@ struct ChatView: View {
                         switch event.direction {
                         case .up:
                             userIsScrolling = true
+                            // Reset scrolling status after a delay
+                            let workItem = DispatchWorkItem {
+                                userIsScrolling = false
+                            }
+                            scrollDebounceWorkItem?.cancel()
+                            scrollDebounceWorkItem = workItem
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: workItem)
                         case .none:
                             break
                         case .down:
@@ -167,10 +176,13 @@ struct ChatView: View {
                             }
                             else if newCount > self.messageCount {
                                 self.messageCount = newCount
-
-                                let sortedMessages = chatViewModel.sortedMessages
-                                if let lastMessage = sortedMessages.last {
-                                    scrollView.scrollTo(lastMessage.id, anchor: .bottom)
+                                
+                                // Only auto-scroll if user isn't manually scrolling
+                                if !userIsScrolling {
+                                    let sortedMessages = chatViewModel.sortedMessages
+                                    if let lastMessage = sortedMessages.last {
+                                        scrollView.scrollTo(lastMessage.id, anchor: .bottom)
+                                    }
                                 }
                             }
                         }

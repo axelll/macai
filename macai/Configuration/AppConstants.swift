@@ -19,7 +19,7 @@ struct AppConstants {
     )
     static let chatGptGenerateChatInstruction: String =
         "Return a short chat name as summary for this chat based on the previous message content and system message if it's not default. Start chat name with one appropriate emoji. Don't answer to my message, just generate a name."
-    static let longStringCount = 1000
+    static let longStringCount = 500
     static let defaultRole: String = "assistant"
     static let streamedResponseUpdateUIInterval: TimeInterval = 0.2
     static let defaultPersonaName = "Default ChatGPT Assistant"

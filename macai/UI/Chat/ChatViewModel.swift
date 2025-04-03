@@ -75,6 +75,15 @@ class ChatViewModel: ObservableObject {
     var sortedMessages: [MessageEntity] {
         return self.chat.messagesArray
     }
+    
+    // For paging/lazy loading support
+    func getVisibleMessages(startIndex: Int, count: Int) -> [MessageEntity] {
+        let allMessages = self.chat.messagesArray
+        guard startIndex < allMessages.count else { return [] }
+        
+        let endIndex = min(startIndex + count, allMessages.count)
+        return Array(allMessages[startIndex..<endIndex])
+    }
 
     private func createMessageManager() -> MessageManager {
         guard let config = self.loadCurrentAPIConfig() else {
