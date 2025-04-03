@@ -80,6 +80,7 @@
 		4AFEE7212C472F53006F99FB /* APIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFEE7202C472F53006F99FB /* APIProtocol.swift */; };
 		4AFEE7232C472FA1006F99FB /* ChatGPTHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFEE7222C472FA1006F99FB /* ChatGPTHandler.swift */; };
 		4AFEE7252C472FB1006F99FB /* OllamaHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFEE7242C472FB1006F99FB /* OllamaHandler.swift */; };
+		CBB26E392D9EB78500787F21 /* GoogleSearchHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBB26E382D9EB78500787F21 /* GoogleSearchHandler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -183,6 +184,7 @@
 		4AFEE7202C472F53006F99FB /* APIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIProtocol.swift; sourceTree = "<group>"; };
 		4AFEE7222C472FA1006F99FB /* ChatGPTHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatGPTHandler.swift; sourceTree = "<group>"; };
 		4AFEE7242C472FB1006F99FB /* OllamaHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaHandler.swift; sourceTree = "<group>"; };
+		CBB26E382D9EB78500787F21 /* GoogleSearchHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSearchHandler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -397,6 +399,7 @@
 			children = (
 				4A4F204A2D62650800D1F57F /* FiraCode-VF.ttf */,
 				4A399C9C29BC8FF100E98796 /* Assets.xcassets */,
+				CBB26E382D9EB78500787F21 /* GoogleSearchHandler.swift */,
 				4A399CA029BC8FF100E98796 /* Preview Assets.xcassets */,
 				4ABDBE6429F86B3900661B2D /* Configuration */,
 				4A272A7029F5D9C200F93D0D /* Utilities */,
@@ -640,6 +643,7 @@
 				4A1614152D46C86800A1EF8D /* PersonaSelectorView.swift in Sources */,
 				4A1614112D430AE300A1EF8D /* ThinkingProcessView.swift in Sources */,
 				4A885C562CEA3F6C0018BBED /* ChatListView.swift in Sources */,
+				CBB26E392D9EB78500787F21 /* GoogleSearchHandler.swift in Sources */,
 				4AADD98C2C924FBA00242D20 /* APIServiceManager.swift in Sources */,
 				4ACAD6632C13AE8F0081BDAC /* CodeView.swift in Sources */,
 				4A399CC429BCE67800E98796 /* PreferencesView.swift in Sources */,
