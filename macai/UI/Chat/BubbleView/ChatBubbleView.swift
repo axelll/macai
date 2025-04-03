@@ -136,10 +136,12 @@ struct ChatBubbleView: View, Equatable {
                                 if text.count > AppConstants.longStringCount {
                                     AttributedText(attributedString)
                                         .textSelection(.enabled)
+                                        .layoutPriority(1)
                                 }
                                 else {
                                     Text(.init(attributedString))
                                         .textSelection(.enabled)
+                                        .layoutPriority(1)
                                 }
 
                             case .table(let header, let data):
