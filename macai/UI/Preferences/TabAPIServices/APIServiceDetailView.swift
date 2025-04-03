@@ -255,6 +255,45 @@ struct APIServiceDetailView: View {
                 )
                 .fixedSize(horizontal: false, vertical: true)
             }
+            
+            if viewModel.type == "googlesearch" {
+                GroupBox {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("🔍 Google Search Integration Setup:")
+                            .font(.headline)
+                        
+                        Text("1. Create a Google Custom Search Engine:")
+                            .fontWeight(.medium)
+                        Text("• Go to https://programmablesearchengine.google.com/controlpanel/create")
+                        Text("• Create a new search engine with \"Search the entire web\" option enabled")
+                        Text("• Copy your Search Engine ID (cx parameter)")
+                        Text("• Paste it in the \"LLM Model\" field above")
+                        
+                        Text("2. Get Google API Key:")
+                            .fontWeight(.medium)
+                            .padding(.top, 4)
+                        Text("• Go to https://developers.google.com/custom-search/v1/introduction")
+                        Text("• Click \"Get a Key\" and follow the instructions")
+                        Text("• Paste the API key in the \"API Token\" field above")
+                        
+                        Text("3. Using Google Search with ANY LLM:")
+                            .fontWeight(.medium)
+                            .padding(.top, 4)
+                        Text("• You can now use Google Search with any LLM in your chats")
+                        Text("• Just include search phrases like \"погугли\", \"google\", \"search for\", etc.")
+                        Text("• For example: \"search for latest news about AI\"")
+                        Text("• The system will perform a search and send results to your LLM")
+                        
+                        Text("4. For best results:")
+                            .fontWeight(.medium)
+                            .padding(.top, 4)
+                        Text("• Select the \"Web Searcher\" persona when starting new chats")
+                        Text("• This persona is optimized for working with search results")
+                    }
+                    .padding(8)
+                }
+                .padding(.vertical, 8)
+            }
 
             HStack {
                 if viewModel.apiService != nil {

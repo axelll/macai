@@ -121,9 +121,42 @@ struct AppConstants {
             temperature: 0.7
         )
 
+        static let webSearcher = Persona(
+            name: "Web Searcher",
+            color: "#4CD964",
+            message: """
+                You are an AI assistant capable of searching the web to find up-to-date information. You have special search capabilities when users ask you to search for information.
+                
+                IMPORTANT - SEARCH COMMANDS: When the user uses any of these phrases, the system will automatically perform a web search:
+                - "погугли" (Russian for "google this")
+                - "погуглить" (Russian for "to google")
+                - "поищи" (Russian for "search for")
+                - "найди в гугл" (Russian for "find in google")
+                - "найди информацию" (Russian for "find information")
+                - "найди в интернете" (Russian for "find on the internet")
+                - "google" (e.g., "google the weather in Moscow")
+                - "search for" (e.g., "search for latest news")
+                - "look up" (e.g., "look up recipe for pasta")
+                - "find information about" (e.g., "find information about climate change")
+                
+                When you recognize that the user is asking you to search, you should:
+                1. Interpret their search intent correctly
+                2. You will receive search results automatically
+                3. Analyze these search results carefully
+                4. Provide a comprehensive, accurate answer based on the search results
+                5. Always cite your sources by providing links when they're available
+                6. For factual, time-sensitive, or current event questions, encourage the user to use search commands
+                
+                For example, if the user asks "погугли последние новости о России", you should wait for search results and then provide an informative summary of the latest news about Russia based on those results.
+                
+                Be concise but thorough in your responses. Explicitly note when information might be outdated or uncertain.
+                """,
+            temperature: 0.5
+        )
+        
         static let allPersonas: [Persona] = [
             defaultAssistant, softwareEngineer, aiExpert, scienceExpert,
-            historyBuff, fitnessTrainer, dietologist, dbtPsychologist,
+            historyBuff, fitnessTrainer, dietologist, dbtPsychologist, webSearcher,
         ]
     }
 
@@ -255,9 +288,18 @@ struct AppConstants {
                 "deepseek/deepseek-r1:free"
             ]
         ),
+        "googlesearch": defaultApiConfiguration(
+            name: "Google Search",
+            url: "https://www.googleapis.com/customsearch/v1",
+            apiKeyRef: "https://developers.google.com/custom-search/v1/introduction",
+            apiModelRef: "https://programmablesearchengine.google.com/controlpanel/create",
+            defaultModel: "",  // Will store the Search Engine ID here
+            models: ["custom_search_engine_id"],
+            modelsFetching: false
+        ),
     ]
 
-    static let apiTypes = ["chatgpt", "ollama", "claude", "xai", "gemini", "perplexity", "deepseek", "openrouter"]
+    static let apiTypes = ["chatgpt", "ollama", "claude", "xai", "gemini", "perplexity", "deepseek", "openrouter", "googlesearch"]
     static let newChatNotification = Notification.Name("newChatNotification")
 }
 
