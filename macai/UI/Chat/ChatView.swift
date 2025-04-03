@@ -21,7 +21,6 @@ struct ChatView: View {
     @State private var newMessage: String = ""
     @State private var editSystemMessage: Bool = false
     @State private var isStreaming: Bool = false
-    @State private var isGenerating: Bool = false
     @State private var isHovered = false
     @State private var currentStreamingMessage: String = ""
     @StateObject private var store = ChatStore(persistenceController: PersistenceController.shared)
@@ -242,7 +241,6 @@ struct ChatView: View {
                 chat: chat,
                 newMessage: $newMessage,
                 isExpanded: $isBottomContainerExpanded,
-                isGenerating: $isGenerating,
                 onSendMessage: {
                     if editSystemMessage {
                         chat.systemMessage = newMessage
@@ -253,9 +251,6 @@ struct ChatView: View {
                     else if newMessage != "" && newMessage != " " {
                         self.sendMessage()
                     }
-                },
-                onCancelGeneration: {
-                    self.cancelGeneration()
                 }
             )
 
@@ -316,7 +311,6 @@ extension ChatView {
 
         if chat.apiService?.useStreamResponse ?? false {
             self.isStreaming = true
-            self.isGenerating = true
             chatViewModel.sendMessageStream(
                 messageBody,
                 contextSize: Int(chat.apiService?.contextSize ?? Int16(AppConstants.chatGptContextSize))
@@ -337,7 +331,6 @@ extension ChatView {
         }
         else {
             self.waitingForResponse = true
-            self.isGenerating = true
             chatViewModel.sendMessage(
                 messageBody,
                 contextSize: Int(chat.apiService?.contextSize ?? Int16(AppConstants.chatGptContextSize))
@@ -375,14 +368,8 @@ extension ChatView {
 
     private func handleResponseFinished() {
         self.isStreaming = false
-        self.isGenerating = false
         chat.waitingForResponse = false
         userIsScrolling = false
-    }
-
-    private func cancelGeneration() {
-        chatViewModel.cancelGeneration()
-        handleResponseFinished()
     }
 
     private func resetError() {

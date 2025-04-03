@@ -10,25 +10,19 @@ struct ChatBottomContainerView: View {
     @ObservedObject var chat: ChatEntity
     @Binding var newMessage: String
     var onSendMessage: () -> Void
-    var onCancelGeneration: (() -> Void)?
     @Binding var isExpanded: Bool
-    @Binding var isGenerating: Bool
     var onExpandedStateChange: ((Bool) -> Void)?  // Add this line
 
     init(
         chat: ChatEntity,
         newMessage: Binding<String>,
         isExpanded: Binding<Bool>,
-        isGenerating: Binding<Bool>,
-        onSendMessage: @escaping () -> Void,
-        onCancelGeneration: (() -> Void)? = nil
+        onSendMessage: @escaping () -> Void
     ) {
         self.chat = chat
         self._newMessage = newMessage
         self.onSendMessage = onSendMessage
-        self.onCancelGeneration = onCancelGeneration
         self._isExpanded = isExpanded
-        self._isGenerating = isGenerating
 
         if chat.messages.count == 0 {
             DispatchQueue.main.async {
@@ -68,26 +62,14 @@ struct ChatBottomContainerView: View {
                 }
 
                 HStack {
-                    HStack {
-                        MessageInputView(
-                            text: $newMessage,
-                            onEnter: onSendMessage,
-                            isFocused: .focused
-                        )
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(nil)
-
-                        if isGenerating, let cancelAction = onCancelGeneration {
-                            Button(action: cancelAction) {
-                                Image(systemName: "stop.circle.fill")
-                                    .foregroundColor(.red)
-                                    .font(.system(size: 24))
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .transition(.opacity)
-                        }
-                    }
+                    MessageInputView(
+                        text: $newMessage,
+                        onEnter: onSendMessage,
+                        isFocused: .focused
+                    )
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)
                     .padding()
                 }
                 .border(width: 1, edges: [.top], color: Color(NSColor.windowBackgroundColor).opacity(0.8))

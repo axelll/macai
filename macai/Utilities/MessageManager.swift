@@ -13,7 +13,6 @@ class MessageManager: ObservableObject {
     private var viewContext: NSManagedObjectContext
     private var lastUpdateTime = Date()
     private let updateInterval = AppConstants.streamedResponseUpdateUIInterval
-    private var cancellationTask: Task<Void, Never>? = nil
 
     init(apiService: APIService, viewContext: NSManagedObjectContext) {
         self.apiService = apiService
@@ -62,7 +61,7 @@ class MessageManager: ObservableObject {
         let requestMessages = prepareRequestMessages(userMessage: message, chat: chat, contextSize: contextSize)
         let temperature = (chat.persona?.temperature ?? AppConstants.defaultTemperatureForChat).roundedToOneDecimal()
 
-        cancellationTask = Task {
+        Task {
             do {
 
                 let stream = try await apiService.sendMessageStream(requestMessages, temperature: temperature)
@@ -70,10 +69,6 @@ class MessageManager: ObservableObject {
                 chat.waitingForResponse = true
 
                 for try await chunk in stream {
-                    if Task.isCancelled {
-                        break
-                    }
-
                     accumulatedResponse += chunk
                     if let lastMessage = chat.lastMessage {
                         if lastMessage.own {
@@ -97,19 +92,10 @@ class MessageManager: ObservableObject {
                 completion(.success(()))
             }
             catch {
-                if Task.isCancelled {
-                    print("Stream was cancelled")
-                    completion(.success(()))
-                } else {
-                    print("Streaming error: \(error)")
-                    completion(.failure(error))
-                }
+                print("Streaming error: \(error)")
+                completion(.failure(error))
             }
         }
-    }
-
-    func cancelGeneration() {
-        cancellationTask?.cancel()
     }
 
     func generateChatNameIfNeeded(chat: ChatEntity, force: Bool = false) {
