@@ -30,6 +30,7 @@ struct TabAPIServicesView: View {
         VStack {
             entityListView
                 .id(refreshID)
+                .frame(minHeight: 260) // Увеличенная высота для более удобного просмотра информации
 
             HStack(spacing: 20) {
                 if selectedServiceID != nil {
@@ -63,7 +64,7 @@ struct TabAPIServicesView: View {
                 }
             }
         }
-        .frame(minHeight: 300)
+        .frame(minHeight: 400)
         .sheet(isPresented: $isShowingAddOrEditService) {
             let selectedApiService = apiServices.first(where: { $0.objectID == selectedServiceID }) ?? nil
             if selectedApiService == nil {
@@ -103,11 +104,31 @@ struct TabAPIServicesView: View {
                     Text("Selected Model: \(service.model ?? "Not specified")")
                     Text("Context size: \(service.contextSize)")
                     Text("Auto chat name generation: \(service.generateChatNames ? "Yes" : "No")")
-                    //Text("Stream responses: \(service.useStreamResponse ? "Yes" : "No")")
                     Text("Default AI Assistant: \(service.defaultPersona?.name ?? "None")")
+                    
+                    // Show token cost information
+                    if let model = service.model, service.type != "googlesearch" {
+                        Divider()
+                            .padding(.vertical, 4)
+                        
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("Token Pricing:").bold()
+                            HStack {
+                                Text("In:")
+                                    .frame(width: 30, alignment: .leading)
+                                Text("$\(String(format: "%.4f", AppConstants.getInputTokenCost(model: model) * 1000000))/1M")
+                            }
+                            HStack {
+                                Text("Out:")
+                                    .frame(width: 30, alignment: .leading)
+                                Text("$\(String(format: "%.4f", AppConstants.getOutputTokenCost(model: model) * 1000000))/1M")
+                            }
+                        }
+                    }
                 }
-            }
-            else {
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 4)
+            } else {
                 Text("Select an API service to view details")
             }
         }

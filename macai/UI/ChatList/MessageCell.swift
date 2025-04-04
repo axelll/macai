@@ -69,6 +69,25 @@ struct MessageCell: View, Equatable {
                             .lineLimit(1)
                             .truncationMode(.tail)
                     }
+                    
+                    // Add token usage and cost info to chat list items
+                    if UserDefaults.standard.bool(forKey: AppConstants.showTokenUsage) || 
+                       UserDefaults.standard.bool(forKey: AppConstants.showTokenCost) {
+                        HStack(spacing: 8) {
+                            if UserDefaults.standard.bool(forKey: AppConstants.showTokenUsage) {
+                                Text("\(chat.totalInputTokens + chat.totalOutputTokens) tokens")
+                                    .font(.caption)
+                                    .foregroundColor(self.isActive ? .white : .secondary)
+                            }
+                            
+                            if UserDefaults.standard.bool(forKey: AppConstants.showTokenCost) {
+                                Text("$\(String(format: "%.4f", chat.totalCost))")
+                                    .font(.caption)
+                                    .foregroundColor(self.isActive ? .white : .secondary)
+                            }
+                        }
+                        .lineLimit(1)
+                    }
                 }
                 .padding(8)
                 Spacer()

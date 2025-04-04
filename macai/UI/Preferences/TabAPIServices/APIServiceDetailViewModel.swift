@@ -30,6 +30,8 @@ class APIServiceDetailViewModel: ObservableObject {
     @Published var fetchedModels: [AIModel] = []
     @Published var isLoadingModels: Bool = false
     @Published var modelFetchError: String? = nil
+    @Published var inputTokenPrice: String = "1.00"
+    @Published var outputTokenPrice: String = "1.00"
 
     init(viewContext: NSManagedObjectContext, apiService: APIServiceEntity?) {
         self.viewContext = viewContext
@@ -62,6 +64,18 @@ class APIServiceDetailViewModel: ObservableObject {
                     print("Failed to get token: \(error.localizedDescription)")
                 }
             }
+            
+            // Initialize token pricing values
+            if let model = service.model {
+                // Get current custom price or default for this model
+                let inputCustomPrices = UserDefaults.standard.dictionary(forKey: AppConstants.customInputPricingKey) as? [String: Double] ?? [:]
+                let currentInputPrice = inputCustomPrices[model] ?? AppConstants.getDefaultInputTokenCost(model: model)
+                inputTokenPrice = String(format: "%.4f", currentInputPrice)
+                
+                let outputCustomPrices = UserDefaults.standard.dictionary(forKey: AppConstants.customOutputPricingKey) as? [String: Double] ?? [:]
+                let currentOutputPrice = outputCustomPrices[model] ?? AppConstants.getDefaultOutputTokenCost(model: model)
+                outputTokenPrice = String(format: "%.4f", currentOutputPrice)
+            }
         }
         else {
             url = AppConstants.apiUrlChatCompletions
@@ -71,9 +85,19 @@ class APIServiceDetailViewModel: ObservableObject {
     private func setupBindings() {
         $selectedModel
             .sink { [weak self] newValue in
-                self?.isCustomModel = (newValue == "custom")
-                if !self!.isCustomModel {
-                    self?.model = newValue
+                guard let self = self else { return }
+                self.isCustomModel = (newValue == "custom")
+                if !self.isCustomModel {
+                    self.model = newValue
+                    
+                    // Update token pricing when model changes
+                    let inputCustomPrices = UserDefaults.standard.dictionary(forKey: AppConstants.customInputPricingKey) as? [String: Double] ?? [:]
+                    let currentInputPrice = inputCustomPrices[newValue] ?? AppConstants.getDefaultInputTokenCost(model: newValue)
+                    self.inputTokenPrice = String(format: "%.4f", currentInputPrice)
+                    
+                    let outputCustomPrices = UserDefaults.standard.dictionary(forKey: AppConstants.customOutputPricingKey) as? [String: Double] ?? [:]
+                    let currentOutputPrice = outputCustomPrices[newValue] ?? AppConstants.getDefaultOutputTokenCost(model: newValue)
+                    self.outputTokenPrice = String(format: "%.4f", currentOutputPrice)
                 }
             }
             .store(in: &cancellables)

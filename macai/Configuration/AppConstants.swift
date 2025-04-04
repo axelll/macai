@@ -34,6 +34,96 @@ struct AppConstants {
     ]
     static let firaCode = "FiraCodeRoman-Regular"
     static let ptMono = "PTMono-Regular"
+    static let showTokenUsage = "showTokenUsage"
+    static let showTokenCost = "showTokenCost"
+    
+    // Custom pricing settings keys
+    static let customInputPricingKey = "customInputPricing"  // Dictionary [model: price]
+    static let customOutputPricingKey = "customOutputPricing" // Dictionary [model: price]
+    
+    static let modelCostPerInputToken: [String: Double] = [
+        // OpenAI Models (per 1M tokens)
+        "gpt-4o": 5.0/1000000,  // $5/M input, $15/M output
+        "gpt-4o-mini": 0.15/1000000,  // $0.15/M input, $0.60/M output
+        "gpt-4-turbo": 10.0/1000000,  // $10/M input, $30/M output
+        "gpt-4": 30.0/1000000,  // $30/M input, $60/M output
+        "gpt-3.5-turbo": 0.5/1000000,  // $0.5/M input, $1.5/M output
+        
+        // Claude Models
+        "claude-3-5-sonnet-latest": 3.0/1000000,  // $3/M input, $15/M output
+        "claude-3-opus-latest": 15.0/1000000,  // $15/M input, $75/M output
+        "claude-3-haiku-20240307": 0.25/1000000,  // $0.25/M input, $1.25/M output
+        
+        // Gemini Models
+        "gemini-1.5-flash": 0.35/1000000,  // $0.35/M input, $1.05/M output
+        "gemini-1.5-pro": 3.5/1000000,  // $3.5/M input, $10.5/M output
+        
+        // Default for any model not listed
+        "default": 1.0/1000000  // $1/M input, $1/M output
+    ]
+    
+    static let modelCostPerOutputToken: [String: Double] = [
+        // OpenAI Models
+        "gpt-4o": 15.0/1000000,
+        "gpt-4o-mini": 0.60/1000000,
+        "gpt-4-turbo": 30.0/1000000,
+        "gpt-4": 60.0/1000000,
+        "gpt-3.5-turbo": 1.5/1000000,
+        
+        // Claude Models
+        "claude-3-5-sonnet-latest": 15.0/1000000,
+        "claude-3-opus-latest": 75.0/1000000,
+        "claude-3-haiku-20240307": 1.25/1000000,
+        
+        // Gemini Models
+        "gemini-1.5-flash": 1.05/1000000,
+        "gemini-1.5-pro": 10.5/1000000,
+        
+        // Default for any model not listed
+        "default": 1.0/1000000
+    ]
+    
+    static func getInputTokenCost(model: String) -> Double {
+        // First check if there's a custom price set by the user
+        if let customPrices = UserDefaults.standard.dictionary(forKey: customInputPricingKey) as? [String: Double],
+           let customPrice = customPrices[model] {
+            return customPrice / 1000000.0 // Convert from per 1M to per token
+        }
+        
+        // Otherwise use default price
+        return modelCostPerInputToken[model] ?? modelCostPerInputToken["default"]!
+    }
+    
+    static func getOutputTokenCost(model: String) -> Double {
+        // First check if there's a custom price set by the user
+        if let customPrices = UserDefaults.standard.dictionary(forKey: customOutputPricingKey) as? [String: Double],
+           let customPrice = customPrices[model] {
+            return customPrice / 1000000.0 // Convert from per 1M to per token
+        }
+        
+        // Otherwise use default price
+        return modelCostPerOutputToken[model] ?? modelCostPerOutputToken["default"]!
+    }
+    
+    static func setInputTokenCost(model: String, pricePerMillion: Double) {
+        var customPrices = UserDefaults.standard.dictionary(forKey: customInputPricingKey) as? [String: Double] ?? [:]
+        customPrices[model] = pricePerMillion
+        UserDefaults.standard.set(customPrices, forKey: customInputPricingKey)
+    }
+    
+    static func setOutputTokenCost(model: String, pricePerMillion: Double) {
+        var customPrices = UserDefaults.standard.dictionary(forKey: customOutputPricingKey) as? [String: Double] ?? [:]
+        customPrices[model] = pricePerMillion
+        UserDefaults.standard.set(customPrices, forKey: customOutputPricingKey)
+    }
+    
+    static func getDefaultInputTokenCost(model: String) -> Double {
+        return (modelCostPerInputToken[model] ?? modelCostPerInputToken["default"]!) * 1000000.0
+    }
+    
+    static func getDefaultOutputTokenCost(model: String) -> Double {
+        return (modelCostPerOutputToken[model] ?? modelCostPerOutputToken["default"]!) * 1000000.0
+    }
 
     struct Persona {
         let name: String

@@ -509,10 +509,30 @@ class MessageManager: ObservableObject {
         newMessage.timestamp = Date()
         newMessage.own = false
         newMessage.chat = chat
+        
+        // Calculate approximate token counts (this is a simple approximation)
+        newMessage.outputTokenCount = Int32(estimateTokenCount(message))
+        
+        // Calculate the cost if any user messages exist
+        if let lastUserMessage = chat.messagesArray.last(where: { $0.own }) {
+            newMessage.inputTokenCount = lastUserMessage.outputTokenCount
+            
+            // Calculate costs
+            let inputCost = Double(newMessage.inputTokenCount) * AppConstants.getInputTokenCost(model: chat.gptModel)
+            let outputCost = Double(newMessage.outputTokenCount) * AppConstants.getOutputTokenCost(model: chat.gptModel)
+            newMessage.totalCost = inputCost + outputCost
+        }
 
         chat.updatedDate = Date()
         chat.addToMessages(newMessage)
         chat.objectWillChange.send()
+    }
+    
+    // Simple token count estimator
+    private func estimateTokenCount(_ text: String) -> Int {
+        // This is a very simple approximation - for English text, tokens are roughly 3/4 of word count
+        let words = text.split(separator: " ").count
+        return Int(Double(words) * 1.3)
     }
 
     private func addNewMessageToRequestMessages(chat: ChatEntity, content: String, role: String) {
@@ -526,6 +546,19 @@ class MessageManager: ObservableObject {
         lastMessage.body = accumulatedResponse
         lastMessage.timestamp = Date()
         lastMessage.waitingForResponse = false
+        
+        // Calculate approximate token count for the response
+        lastMessage.outputTokenCount = Int32(estimateTokenCount(accumulatedResponse))
+        
+        // Calculate the cost if any user messages exist
+        if let lastUserMessage = chat.messagesArray.last(where: { $0.own }) {
+            lastMessage.inputTokenCount = lastUserMessage.outputTokenCount
+            
+            // Calculate costs
+            let inputCost = Double(lastMessage.inputTokenCount) * AppConstants.getInputTokenCost(model: chat.gptModel)
+            let outputCost = Double(lastMessage.outputTokenCount) * AppConstants.getOutputTokenCost(model: chat.gptModel)
+            lastMessage.totalCost = inputCost + outputCost
+        }
 
         chat.objectWillChange.send()
 

@@ -6,6 +6,85 @@
 //
 import SwiftUI
 
+// Token pricing subview
+struct TokenPricingView: View {
+    @ObservedObject var viewModel: APIServiceDetailViewModel
+    
+    var body: some View {
+        GroupBox(label: Text("Token Pricing Settings").font(.headline)) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Model:").bold()
+                    Text(viewModel.model)
+                }
+                
+                Divider()
+                
+                // Input token pricing
+                HStack {
+                    Text("Input cost:").bold()
+                    
+                    TextField("$", text: $viewModel.inputTokenPrice)
+                        .frame(width: 60)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onChange(of: viewModel.inputTokenPrice) { newValue in
+                            if let price = Double(newValue) {
+                                AppConstants.setInputTokenCost(model: viewModel.model, pricePerMillion: price)
+                            }
+                        }
+                    
+                    Text("per 1M tokens")
+                    
+                    Button("Reset") {
+                        resetInputPrice()
+                    }
+                    .buttonStyle(.borderless)
+                    .controlSize(.small)
+                }
+                
+                // Output token pricing
+                HStack {
+                    Text("Output cost:").bold()
+                    
+                    TextField("$", text: $viewModel.outputTokenPrice)
+                        .frame(width: 60)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onChange(of: viewModel.outputTokenPrice) { newValue in
+                            if let price = Double(newValue) {
+                                AppConstants.setOutputTokenCost(model: viewModel.model, pricePerMillion: price)
+                            }
+                        }
+                    
+                    Text("per 1M tokens")
+                    
+                    Button("Reset") {
+                        resetOutputPrice()
+                    }
+                    .buttonStyle(.borderless)
+                    .controlSize(.small)
+                }
+            }
+            .padding(8)
+        }
+    }
+    
+    private func resetInputPrice() {
+        let defaultPrice = AppConstants.getDefaultInputTokenCost(model: viewModel.model)
+        viewModel.inputTokenPrice = String(format: "%.4f", defaultPrice)
+        var customPrices = UserDefaults.standard.dictionary(forKey: AppConstants.customInputPricingKey) as? [String: Double] ?? [:]
+        customPrices.removeValue(forKey: viewModel.model)
+        UserDefaults.standard.set(customPrices, forKey: AppConstants.customInputPricingKey)
+    }
+    
+    private func resetOutputPrice() {
+        let defaultPrice = AppConstants.getDefaultOutputTokenCost(model: viewModel.model)
+        viewModel.outputTokenPrice = String(format: "%.4f", defaultPrice)
+        var customPrices = UserDefaults.standard.dictionary(forKey: AppConstants.customOutputPricingKey) as? [String: Double] ?? [:]
+        customPrices.removeValue(forKey: viewModel.model)
+        UserDefaults.standard.set(customPrices, forKey: AppConstants.customOutputPricingKey)
+    }
+}
+
 struct APIServiceDetailView: View {
     @StateObject private var viewModel: APIServiceDetailViewModel
     @Environment(\.presentationMode) var presentationMode
@@ -159,14 +238,21 @@ struct APIServiceDetailView: View {
                     }
                     .padding(.bottom)
 
-                    HStack {
-                        ButtonTestApiTokenAndModel(
-                            lampColor: $lampColor,
-                            gptToken: viewModel.apiKey,
-                            gptModel: viewModel.model,
-                            apiUrl: viewModel.url,
-                            apiType: viewModel.type
-                        )
+                    VStack(spacing: 8) {
+                        HStack {
+                            ButtonTestApiTokenAndModel(
+                                lampColor: $lampColor,
+                                gptToken: viewModel.apiKey,
+                                gptModel: viewModel.model,
+                                apiUrl: viewModel.url,
+                                apiType: viewModel.type
+                            )
+                        }
+                        
+                        // Token cost information and custom pricing
+                        if viewModel.type != "googlesearch" {
+                            TokenPricingView(viewModel: viewModel)
+                        }
                     }
                 }
                 .padding(8)

@@ -86,6 +86,15 @@ struct macaiApp: App {
             updaterDelegate: nil,
             userDriverDelegate: nil
         )
+        
+        // Initialize user defaults for token tracking
+        if UserDefaults.standard.object(forKey: AppConstants.showTokenUsage) == nil {
+            UserDefaults.standard.set(true, forKey: AppConstants.showTokenUsage)
+        }
+        
+        if UserDefaults.standard.object(forKey: AppConstants.showTokenCost) == nil {
+            UserDefaults.standard.set(true, forKey: AppConstants.showTokenCost)
+        }
 
         DatabasePatcher.applyPatches(context: persistenceController.container.viewContext)
         DatabasePatcher.migrateExistingConfiguration(context: persistenceController.container.viewContext)

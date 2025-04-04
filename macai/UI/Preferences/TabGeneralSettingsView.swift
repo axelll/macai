@@ -28,6 +28,8 @@ struct TabGeneralSettingsView: View {
     @AppStorage("chatFontSize") var chatFontSize: Double = 14.0
     @AppStorage("preferredColorScheme") private var preferredColorSchemeRaw: Int = 0
     @AppStorage("codeFont") private var codeFont: String = AppConstants.firaCode
+    @AppStorage(AppConstants.showTokenUsage) var showTokenUsage: Bool = true
+    @AppStorage(AppConstants.showTokenCost) var showTokenCost: Bool = true
     @Environment(\.colorScheme) private var systemColorScheme
     @State private var selectedColorSchemeRaw: Int = 0
     @State private var codeResult: String = ""
@@ -183,6 +185,23 @@ struct TabGeneralSettingsView: View {
                         }
                     }
                     .padding(8)
+                }
+                
+                Divider()
+                
+                GridRow {
+                    HStack {
+                        Text("Token Usage")
+                        Spacer()
+                    }
+                    .frame(width: 120)
+                    .gridCellAnchor(.top)
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Toggle("Show token count", isOn: $showTokenUsage)
+                        Toggle("Show token cost", isOn: $showTokenCost)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
 

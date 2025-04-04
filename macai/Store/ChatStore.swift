@@ -11,6 +11,20 @@ import SwiftUI
 
 let migrationKey = "com.example.chatApp.migrationFromJSONCompleted"
 
+extension ChatEntity {
+    var totalInputTokens: Int {
+        return messagesArray.reduce(0) { $0 + Int($1.inputTokenCount) }
+    }
+    
+    var totalOutputTokens: Int {
+        return messagesArray.reduce(0) { $0 + Int($1.outputTokenCount) }
+    }
+    
+    var totalCost: Double {
+        return messagesArray.reduce(0.0) { $0 + $1.totalCost }
+    }
+}
+
 class ChatStore: ObservableObject {
     let persistenceController: PersistenceController
     let viewContext: NSManagedObjectContext

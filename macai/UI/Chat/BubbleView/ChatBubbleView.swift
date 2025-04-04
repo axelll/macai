@@ -279,6 +279,25 @@ struct ChatBubbleView: View, Equatable {
                 .buttonStyle(PlainButtonStyle())
                 .foregroundColor(.gray.opacity(0.7))
             }
+            
+            if !content.own && message != nil {
+                if UserDefaults.standard.bool(forKey: AppConstants.showTokenUsage) || 
+                   UserDefaults.standard.bool(forKey: AppConstants.showTokenCost) {
+                    HStack(spacing: 6) {
+                        if UserDefaults.standard.bool(forKey: AppConstants.showTokenUsage) {
+                            Text("\(message?.outputTokenCount ?? 0)t")
+                                .font(.system(size: 11))
+                                .foregroundColor(.gray.opacity(0.7))
+                        }
+                        
+                        if UserDefaults.standard.bool(forKey: AppConstants.showTokenCost) {
+                            Text("$\(String(format: "%.5f", message?.totalCost ?? 0))")
+                                .font(.system(size: 11))
+                                .foregroundColor(.gray.opacity(0.7))
+                        }
+                    }
+                }
+            }
 
             Button(action: {
                 copyMessageToClipboard(content.message)

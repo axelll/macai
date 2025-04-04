@@ -379,10 +379,20 @@ extension ChatView {
         sendingMessage.own = true
         sendingMessage.waitingForResponse = false
         sendingMessage.chat = chat
-
+        
+        // Calculate token count for user message
+        sendingMessage.outputTokenCount = Int32(estimateTokenCount(messageBody))
+        
         chat.addToMessages(sendingMessage)
         store.saveInCoreData()
         newMessage = ""
+    }
+    
+    // Simple token count estimator
+    private func estimateTokenCount(_ text: String) -> Int {
+        // This is a very simple approximation - for English text, tokens are roughly 3/4 of word count
+        let words = text.split(separator: " ").count
+        return Int(Double(words) * 1.3)
     }
 
     private func handleResponseFinished() {

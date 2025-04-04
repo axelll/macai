@@ -39,8 +39,8 @@ struct ChatBottomContainerView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            HStack {
-                Spacer()
+            HStack(alignment: .center) {
+                // Assistant selector - left aligned
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         isExpanded.toggle()
@@ -55,9 +55,30 @@ struct ChatBottomContainerView: View {
                     }
                 }
                 .buttonStyle(PlainButtonStyle())
-                .padding(.horizontal)
-                .padding(.top, -16)
+                .padding(.leading)
+                
+                Spacer()
+                
+                // Token usage summary - right aligned
+                if UserDefaults.standard.bool(forKey: AppConstants.showTokenUsage) || 
+                   UserDefaults.standard.bool(forKey: AppConstants.showTokenCost) {
+                    HStack(spacing: 8) {
+                        if UserDefaults.standard.bool(forKey: AppConstants.showTokenUsage) {
+                            Text("Tokens: \(chat.totalInputTokens + chat.totalOutputTokens)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        if UserDefaults.standard.bool(forKey: AppConstants.showTokenCost) {
+                            Text("Cost: $\(String(format: "%.4f", chat.totalCost))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.trailing)
+                }
             }
+            .padding(.top, -16)
 
             VStack(spacing: 0) {
                 VStack {

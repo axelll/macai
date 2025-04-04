@@ -65,7 +65,7 @@ struct EntityListView<Entity: NSManagedObject & Identifiable, DetailContent: Vie
                 Spacer()
 
             }
-            .frame(maxHeight: 150)
+            .frame(maxHeight: .infinity)
         }
     }
 }

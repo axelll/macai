@@ -59,6 +59,9 @@ class MessageEntity: NSManagedObject, Identifiable {
     @NSManaged public var own: Bool
     @NSManaged public var waitingForResponse: Bool
     @NSManaged public var chat: ChatEntity?
+    @NSManaged public var inputTokenCount: Int32
+    @NSManaged public var outputTokenCount: Int32
+    @NSManaged public var totalCost: Double
 }
 
 /// Legacy Chat struct, used for migration from old storage, for exporting and importing data in JSON

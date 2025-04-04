@@ -38,9 +38,12 @@
     <entity name="MessageEntity" representedClassName=".MessageEntity" syncable="YES">
         <attribute name="body" optional="YES" attributeType="String" spotlightIndexingEnabled="YES"/>
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="inputTokenCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="outputTokenCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="own" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="totalCost" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="waitingForResponse" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ChatEntity" inverseName="messages" inverseEntity="ChatEntity" spotlightIndexingEnabled="YES"/>
     </entity>
